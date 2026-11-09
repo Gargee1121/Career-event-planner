@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University Event Management System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Main Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <div class="brand-logo">🎓</div>
+            <div class="brand-text">
+                <h1>CampusPulse</h1>
+                <span>Internal Event Console</span>
+            </div>
+        </div>
+        <div class="nav-actions">
+            <button class="btn btn-primary" id="openCreateModalBtn">+ Schedule New Event</button>
+        </div>
+    </nav>
+
+    <!-- Master Workspace Container -->
+    <main class="dashboard-container">
+        
+        <!-- Live Analytic Metrics Counter Rows -->
+        <section class="metrics-row" id="metricsSummary">
+            <div class="metric-card">
+                <div class="metric-info">
+                    <span class="metric-label">Active Events</span>
+                    <h2 class="metric-value" id="countTotal">0</h2>
+                </div>
+                <div class="metric-icon bg-light-blue">📅</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-info">
+                    <span class="metric-label">Technical Streams</span>
+                    <h2 class="metric-value" id="countTech">0</h2>
+                </div>
+                <div class="metric-icon bg-light-indigo">💻</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-info">
+                    <span class="metric-label">Cultural & Sports</span>
+                    <h2 class="metric-value" id="countMixed">0</h2>
+                </div>
+                <div class="metric-icon bg-light-purple">🎭</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-info">
+                    <span class="metric-label">Total Student Bookings</span>
+                    <h2 class="metric-value" id="countRegs">0</h2>
+                </div>
+                <div class="metric-icon bg-light-green">🎟️</div>
+            </div>
+        </section>
+
+        <!-- Command Filter & Sub-Navigation Workspace Toolbar -->
+        <section class="toolbar">
+            <!-- Modern Tab Switching Row -->
+            <div class="tab-group" id="categoryTabs">
+                <button class="tab-item active" data-category="all">All Gatherings</button>
+                <button class="tab-item" data-category="technical">Technical</button>
+                <button class="tab-item" data-category="cultural">Cultural</button>
+                <button class="tab-item" data-category="sports">Sports</button>
+            </div>
+
+            <!-- Context Search & Sorting Inputs Group -->
+            <div class="filter-controls">
+                <div class="search-input-wrapper">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="searchBar" placeholder="Search by title, hall, or keywords...">
+                </div>
+                <select class="select-dropdown" id="sortOrder">
+                    <option value="soonest">Timeline: Imminent First</option>
+                    <option value="furthest">Timeline: Distant First</option>
+                </select>
+                <!-- Layout Toggle Actions Matrix -->
+                <div class="view-toggle-group">
+                    <button class="toggle-btn active" id="viewGridBtn" title="Grid View">⊞</button>
+                    <button class="toggle-btn" id="viewTableBtn" title="List View">☰</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Core Display Dynamic Presentation Viewports -->
+        <section id="gridLayoutViewport" class="events-grid-view active"></section>
+        <section id="tableLayoutViewport" class="events-table-view"></section>
+
+    </main>
+
+    <!-- FORM MODAL 1: CREATE NEW EVENT MODAL -->
+    <div class="modal-overlay" id="createEventModal">
+        <div class="modal-box width-md">
+            <div class="modal-header">
+                <div>
+                    <h3>Schedule Academic Event</h3>
+                    <p>Publish an entry onto the public campus dashboard schedule stream.</p>
+                </div>
+                <button class="modal-close-btn" data-modal="createEventModal">&times;</button>
+            </div>
+            <form id="eventCreationForm">
+                <div class="form-row">
+                    <div class="form-group col-12">
+                        <label for="eventTitle">Event Title</label>
+                        <input type="text" id="eventTitle" placeholder="e.g., Smart India Internal Hackathon" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-6">
+                        <label for="eventDate">Date & Starting Time</label>
+                        <input type="datetime-local" id="eventDate" required>
+                    </div>
+                    <div class="form-group col-6">
+                        <label for="eventCategory">Category</label>
+                        <select id="eventCategory" required>
+                            <option value="technical">Technical Stream</option>
+                            <option value="cultural">Cultural Event</option>
+                            <option value="sports">Athletic/Sports</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-12">
+                        <label for="eventVenue">Venue Location Address</label>
+                        <input type="text" id="eventVenue" placeholder="e.g., Computing Lab 4, Block-A" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-modal="createEventModal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Confirm Scheduling</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- FORM MODAL 2: STUDENT REGISTRATION BOOKING OVERLAY -->
+    <div class="modal-overlay" id="registrationModal">
+        <div class="modal-box width-sm">
+            <div class="modal-header">
+                <div>
+                    <h3 id="modalEventTitle">Event Registration</h3>
+                    <p>Provide accurate credentials to secure your attendance booking.</p>
+                </div>
+                <button class="modal-close-btn" data-modal="registrationModal">&times;</button>
+            </div>
+            <form id="studentRegistrationForm" novalidate>
+                <input type="hidden" id="targetEventId">
+                
+                <div class="form-group" id="nameFieldGroup">
+                    <label for="studentName">Full Student Name</label>
+                    <input type="text" id="studentName" placeholder="e.g., Aarav Sharma">
+                    <span class="error-feedback">Name field requires minimum 3 alphabet characters.</span>
+                </div>
+
+                <div class="form-group" id="emailFieldGroup">
+                    <label for="studentEmail">Institutional Email Address</label>
+                    <input type="email" id="studentEmail" placeholder="username@university.edu">
+                    <span class="error-feedback">Input must conform to standard email formatting.</span>
+                </div>
+
+                <div class="form-group" id="rollFieldGroup">
+                    <label for="studentRoll">University Enrollment / Roll No.</label>
+                    <input type="text" id="studentRoll" placeholder="e.g., 22CSE1042">
+                    <span class="error-feedback">Roll entry requires an alphanumeric string value (5-12 chars).</span>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-modal="registrationModal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Submit Spot Reservation</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
